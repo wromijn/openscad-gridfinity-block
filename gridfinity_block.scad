@@ -1,29 +1,74 @@
 $fn=128;
 
-// TODO: provide option for normal and refined feet - how about GF lite?
-// TODO: there should be a mask like gb_cube_hole that you can apply to a custom shape so it doesn't protrude the rounded corner and to clean up any parts that stick out. Much easier to make custom shapes that way. After that, gb_cube_hole can be refactored to use the mask?
-
 gf_wall_thickness = 1.3;
 gf_almost_zero = 0.001;
 
-gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = true) {
-    gb_cube_hole([ -$inner_width/2, -$inner_length/2 ],[ $inner_width, $inner_length/2 ], $inner_height);
-    gb_cylinder_hole([ 0, $inner_length/4 ], 38, $inner_height);
-}
-translate([100, 0, 0]) {
-    gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = false) {
-        gb_cube_hole([ 0, 0 ],[ $inner_width, $inner_length/2 ], $inner_height);
-        gb_cylinder_hole([ 21 + $inner_width / 3, 21 + $inner_length / 2 ], 38, $inner_height);
+// TODO: cleanup, separate examples from lib, get rid of global vars
+
+//gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = true) {
+//    gb_cube_hole([ -$inner_width/2, -$inner_length/2 ],[ $inner_width, $inner_length/2 ], $inner_height);
+//    gb_cylinder_hole([ 0, $inner_length/4 ], 38, $inner_height);
+//}
+//translate([100, 0, 0]) {
+//    gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = false) {
+//        gb_cube_hole([ 0, 0 ],[ $inner_width, $inner_length/2 ], $inner_height);
+//        gb_cylinder_hole([ 21 + $inner_width / 3, 21 + $inner_length / 2 ], 38, $inner_height);
+//    }
+//}
+
+
+if($preview) {
+    translate([-100,0,-42]) {
+        scooped_bin(42,42,42,10);
     }
 }
 
-module gb_cube_hole(pos, size, depth, radius=0.8) {
-    translate([ pos[0] + radius, pos[1] + radius, -depth ]) {
-        linear_extrude(h = depth + gf_almost_zero) {
-            offset(r = radius) {
-                square([ size[0]-2*radius, size[1]-2*radius ]);
+gridfinity_block([ 1, 1, 6 ], stacking_lip = true, center = false) {
+    translate([0,0,-$inner_height]) {
+        intersection() {
+            scooped_bin($inner_width, $inner_length, $inner_height+gf_almost_zero, 10);
+            gb_mask(size=[$inner_width,$inner_length,$inner_height+gf_almost_zero], center=false);
+        }
+    }
+}
+
+module scooped_bin(width, length, height, scoop_radius) {
+    difference() {
+        union() {
+            translate([0, 0, scoop_radius]) {
+                cube([width, length, height-scoop_radius]);
+            }
+            translate([0, scoop_radius, 0]) {
+                cube([width, length-scoop_radius, height]);
+            }
+            translate([0,scoop_radius,scoop_radius]) {
+                rotate([0,90,0]) {
+                    cylinder(r=scoop_radius, h=width);
+                }
             }
         }
+        translate([-gf_almost_zero, length-10, height-1]) {
+            cube([width+2*gf_almost_zero, 10+gf_almost_zero, 1+gf_almost_zero]);
+        }
+    }
+}
+
+module gb_mask(size, center=false, radius=0.8) {
+    size_vector = is_list(size) ? size : [size, size, size];
+    offset_xy = center ? 0 : radius;
+    offset_z = center ? -size[2]/2 : 0;
+    translate([ offset_xy, offset_xy, offset_z ]) {
+        linear_extrude(h = size_vector[2]) {
+            offset(r = radius) {
+                square([ size_vector[0]-radius*2, size_vector[1]-radius*2 ], center=center);
+            }
+        }
+    }
+}
+
+module gb_cube_hole(pos, size, depth, radius=0.8, label=false) {
+    translate([ pos[0], pos[1], -depth ]) {
+        gb_mask([size[0], size[1], depth+gf_almost_zero], radius=radius, label=label);
     }
 }
 
@@ -148,7 +193,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     module stacking_lip(size, center) {
         // [width, length, height, radius]
         lip_layers = [
-            [ size[0] - 2.6, size[1] - 2.6, 0-gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
+            [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
             [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
             [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0], size[1], 4.4, 3.75 ]
         ]; 
