@@ -1,18 +1,23 @@
 $fn=128;
 
-// TODO: fix stacking lip dimensions: https://www.printables.com/model/417152-gridfinity-specification
 // TODO: provide option for normal and refined feet - how about GF lite?
 // TODO: there should be a mask like gb_cube_hole that you can apply to a custom shape so it doesn't protrude the rounded corner and to clean up any parts that stick out. Much easier to make custom shapes that way. After that, gb_cube_hole can be refactored to use the mask?
 
-gf_wall_thickness = 1;
+gf_wall_thickness = 1.3;
 gf_almost_zero = 0.001;
 
-gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = false) {
-    gb_cube_hole([ 0, 0 ],[ $inner_width, $inner_length/2 ], $inner_height);
-    gb_cylinder_hole([ 20.5, 61.5 ], 38, $inner_height);
+gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = true) {
+    gb_cube_hole([ -$inner_width/2, -$inner_length/2 ],[ $inner_width, $inner_length/2 ], $inner_height);
+    gb_cylinder_hole([ 0, $inner_length/4 ], 38, $inner_height);
+}
+translate([100, 0, 0]) {
+    gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = false) {
+        gb_cube_hole([ 0, 0 ],[ $inner_width, $inner_length/2 ], $inner_height);
+        gb_cylinder_hole([ 21 + $inner_width / 3, 21 + $inner_length / 2 ], 38, $inner_height);
+    }
 }
 
-module gb_cube_hole(pos, size, depth, radius=3.1) {
+module gb_cube_hole(pos, size, depth, radius=0.8) {
     translate([ pos[0] + radius, pos[1] + radius, -depth ]) {
         linear_extrude(h = depth + gf_almost_zero) {
             offset(r = radius) {
@@ -57,9 +62,11 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
                 0,
                 $feet_height
             ];   
-        echo(block_position)
+
             translate(block_position) {
-                block(block_dimensions, true);
+                block(block_dimensions, center) {
+                    children();
+                }
             }
         }
     }
@@ -67,10 +74,10 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     module block(size, center) {
         difference() {
             union() {
-                gf_rounded_cube(size, 3.75, center);
+                rounded_cube(size, 3.75, true);
                 if (stacking_lip) {
                    translate([ 0, 0, size[2] ]) {
-                       stacking_lip([ size[0], size[1] ], center);
+                       stacking_lip([ size[0], size[1] ], true);
                    }
                 }
             }
@@ -85,18 +92,24 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
                 $inner_length = $outer_length - 2 * gf_wall_thickness,
                 $inner_height = size[2] - floor_thickness,
                 $outer_height = size[2]
-            ) children();
+            ) {
+                children_x_offset = center ? 0 : -$inner_width / 2;
+                children_y_offset = center ? 0 : -$inner_length / 2;
+                translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
+                    children();
+                }
+            }
         }
     }
     
     module feet(number_x, number_y) {
-        // [width, height, radius]
+        // [width, length, height, radius]
         foot_layers = [
-            [35.6, 0.8, 0.8],
-            [37.2, 1.8, 1.6],
-            [41.5, 2.15, 3.75]
-        ];
-    
+            [35.6, 35.6, 0, 0.8], [37.2, 37.2, 0.8, 1.6],
+            [37.2, 37.2, 0.8, 1.6], [37.2, 37.2, 2.6, 1.6],
+            [37.2, 37.2, 2.6, 1.6], [41.5, 41.5, 4.75, 3.75]
+        ]; 
+            
         for(grid_x = [0:number_x-1]) {
             for(grid_y = [0:number_y-1]) {
                 foot_xpos = 42 * grid_x - 21 * number_x + 21;
@@ -109,35 +122,17 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             }
         }
         
-        let($feet_height = foot_height(foot_layers)) {
+        let($feet_height = foot_layers[len(foot_layers)-1][2]) {
             children();
         }
             
-        module foot(layers) {            
+        module foot(layers) {           
             difference() {
-                union() {
-                    hull() {
-                        gf_rounded_cube([ layers[0][0], layers[0][0], gf_almost_zero ], layers[0][2], true);
-                        translate([ 0, 0, layers[0][1] ]) {
-                            gf_rounded_cube([layers[1][0], layers[1][0], layers[1][1]], layers[1][2], true);
-                        }
-                    }
-                    hull() {
-                        translate([ 0, 0, layers[0][1] + layers[1][1] ]) {
-                            gf_rounded_cube([ layers[1][0], layers[1][0], gf_almost_zero ], layers[1][2], true);
-                        }
-                        translate( [0, 0, layers[0][1] + layers[1][1] + layers[2][1] ]) {
-                            gf_rounded_cube([ layers[2][0], layers[2][0], gf_almost_zero ], layers[2][2], true);
-                        }
-                    }
-                }
+                rounded_hull(layers);
                 children();
             }
-        }
-        
-        function foot_height(layers) =
-            layers[0][1] + layers[1][1] + layers[2][1];
-    
+        }      
+
         module magnet_holes() {
             translate([ 13, 13, 1 ]) { magnet_hole(); }
             translate([ 13, -13, 1 ]) { magnet_hole(); }
@@ -151,52 +146,54 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     }
 
     module stacking_lip(size, center) {
-        gf_stacking_lip_height = 1;
+        // [width, length, height, radius]
+        lip_layers = [
+            [ size[0] - 2.6, size[1] - 2.6, 0-gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
+            [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
+            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0], size[1], 4.4, 3.75 ]
+        ]; 
         
         difference() {
-            linear_extrude(h = gf_stacking_lip_height) {
-                difference() {
-                    gf_rounded_square(size, radius = 3.75, center = center);
-                    offset = center ? 0 : gf_wall_thickness;
-                    translate([offset, offset, 0]) {
-                        gf_rounded_square(
-                            [ size[0] - 2 * gf_wall_thickness, size[1] - 2 * gf_wall_thickness ],
-                            radius = 3.1,
-                            center = center);
-                    }
-                }
-            }
-            hull() {
-                offset = center ? 0 : gf_wall_thickness;
-                translate([offset, offset, gf_stacking_lip_height/2]) {
-                    gf_rounded_cube(
-                        [ size[0] - 2 * gf_wall_thickness, size[1] - 2 * gf_wall_thickness, 1 ],
-                        radius = 3.1,
-                        center = center);
-                }
-                translate([offset/2, offset/2, gf_stacking_lip_height]) {
-                    gf_rounded_cube(
-                        [ size[0] - gf_wall_thickness, size[1] - gf_wall_thickness, 1 ],
-                        radius = 3.4,
-                        center = center);
-                }
-            }
+            rounded_cube([ size[0], size[1], 4.4 ], 3.75, center);
+            rounded_hull(lip_layers);
         }
     }
 
-    module gf_rounded_cube(size, radius, center = false) {
+    module rounded_cube(size, radius, center = false) {
         linear_extrude(h = size[2]) {
-            gf_rounded_square(size, radius, center);
+            rounded_square(size, radius, center);
         }
     }
 
-    module gf_rounded_square(size, radius, center = false) {
+    module rounded_square(size, radius, center = false) {
         offset = center ? 0 : radius;
         corrected_size = [ size[0] - (2 * radius),  size[1] - (2 * radius) ];
         translate([ offset, offset, 0 ]) {
             offset(r = radius) {
-                square(corrected_size, center=center);
+                square(corrected_size, center = center);
             }
         }
+    }
+    
+    // [ [width, length, height, radius], ... ]
+    module rounded_hull(layers) {
+        for(layerIx = [0:2:len(layers)-1]) {
+            layer = layers[layerIx];
+            nextLayer = layers[layerIx+1];
+            translate([ 0, 0, layer[2] ]) {
+                if (have_same_dimensions(layer, nextLayer)) {              
+                    rounded_cube([ layer[0], layer[1], nextLayer[2] ], layer[3], center = true);
+                } else {
+                    hull() {
+                        rounded_cube([ layer[0], layer[1], gf_almost_zero ], layer[3], center = true);
+                        translate([ 0, 0, nextLayer[2]-layer[2] ]) {
+                            rounded_cube([ nextLayer[0], nextLayer[1], gf_almost_zero ], nextLayer[3], center = true);
+                        }
+                    }   
+                }            
+            }
+        }
+        function have_same_dimensions(layer1, layer2) =
+            layer1[0] == layer2[0] && layer1[1] == layer2[1] && layer1[3] == layer2[3];
     }
 }
