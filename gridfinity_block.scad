@@ -100,9 +100,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
                 foot_xpos = 42 * grid_x - 21 * number_x + 21;
                 foot_ypos = 42 * grid_y - 21 * number_y + 21;
                 translate([ foot_xpos, foot_ypos, 0 ]) {
-                    foot(foot_layers) {
-                        magnet_holes();
-                    }
+                    foot(foot_layers);
                 }
             }
         }
@@ -114,7 +112,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
         module foot(layers) {
             difference() {
                 rounded_hull(layers);
-                children();
+                magnet_holes();
             }
         }
 
