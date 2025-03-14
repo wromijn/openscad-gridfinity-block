@@ -1,3 +1,4 @@
+/* [Hidden] */
 gf_wall_thickness = 1.3;
 gf_almost_zero = 0.001;
 
@@ -9,7 +10,7 @@ module gb_cube_hole(pos, size, depth, radius=0.8) {
              }
          }
      }
- }    
+ }
 
 module gb_cylinder_hole(pos, d, depth) {
     translate([ pos[0], pos[1], -depth ]) {
@@ -31,10 +32,10 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
         center ? 0 : bin_dimensions[0] / 2 - gf_wall_thickness,
         center ? 0 : bin_dimensions[1] / 2 - gf_wall_thickness,
         -bin_dimensions[2]
-    ];  
+    ];
 
     translate(feet_position) {
-        feet(size[0], size[1]) {        
+        feet(size[0], size[1]) {
             block_dimensions = [
                 bin_dimensions[0],
                 bin_dimensions[1],
@@ -45,7 +46,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
                 0,
                 0,
                 $feet_height
-            ];   
+            ];
 
             translate(block_position) {
                 block(block_dimensions, center) {
@@ -54,7 +55,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             }
         }
     }
-    
+
     module block(size, center) {
         difference() {
             union() {
@@ -67,7 +68,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             }
 
             floor_thickness = 1;
-            
+
             let(
                 $outer_width = size[0],
                 $outer_length = size[1],
@@ -85,15 +86,15 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             }
         }
     }
-    
+
     module feet(number_x, number_y) {
-        // [width, length, height, radius]
+        // [ [width, length, height, radius], ... ]
         foot_layers = [
             [35.6, 35.6, 0, 0.8], [37.2, 37.2, 0.8, 1.6],
             [37.2, 37.2, 0.8, 1.6], [37.2, 37.2, 2.6, 1.6],
             [37.2, 37.2, 2.6, 1.6], [41.5, 41.5, 4.75, 3.75]
-        ]; 
-            
+        ];
+
         for(grid_x = [0:number_x-1]) {
             for(grid_y = [0:number_y-1]) {
                 foot_xpos = 42 * grid_x - 21 * number_x + 21;
@@ -105,17 +106,17 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
                 }
             }
         }
-        
+
         let($feet_height = foot_layers[len(foot_layers)-1][2]) {
             children();
         }
-            
-        module foot(layers) {           
+
+        module foot(layers) {
             difference() {
                 rounded_hull(layers);
                 children();
             }
-        }      
+        }
 
         module magnet_holes() {
             translate([ 13, 13, 1 ]) { magnet_hole(); }
@@ -130,13 +131,13 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     }
 
     module stacking_lip(size, center) {
-        // [width, length, height, radius]
+        // [ [width, length, height, radius], ... ]
         lip_layers = [
             [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
             [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
             [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0], size[1], 4.4, 3.75 ]
-        ]; 
-        
+        ];
+
         difference() {
             rounded_cube([ size[0], size[1], 4.4 ], 3.75, center);
             rounded_hull(lip_layers);
@@ -158,14 +159,14 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             }
         }
     }
-    
+
     // [ [width, length, height, radius], ... ]
     module rounded_hull(layers) {
         for(layerIx = [0:2:len(layers)-1]) {
             layer = layers[layerIx];
             nextLayer = layers[layerIx+1];
             translate([ 0, 0, layer[2] ]) {
-                if (have_same_dimensions(layer, nextLayer)) {              
+                if (have_same_dimensions(layer, nextLayer)) {
                     rounded_cube([ layer[0], layer[1], nextLayer[2] ], layer[3], center = true);
                 } else {
                     hull() {
@@ -173,8 +174,8 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
                         translate([ 0, 0, nextLayer[2]-layer[2] ]) {
                             rounded_cube([ nextLayer[0], nextLayer[1], gf_almost_zero ], nextLayer[3], center = true);
                         }
-                    }   
-                }            
+                    }
+                }
             }
         }
         function have_same_dimensions(layer1, layer2) =
