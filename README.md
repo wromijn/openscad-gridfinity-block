@@ -1,7 +1,7 @@
 # Gridfinity Block
 
 ## What is it?
-A solid block with optional stacking lip to create custom Gridfinity bins by starting with the block and then subtracting shapes from it. Carving it out, so to speak.
+A solid block with optional stacking lip to create custom Gridfinity bins by starting with the block and then subtracting shapes from it. Carving it out, so to speak. There are magnet holes too!
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/11379160-d379-4225-82e3-db073b26b9aa" alt="gridfinity-block visual" height="200">
