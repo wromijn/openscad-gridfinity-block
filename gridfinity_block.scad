@@ -1,8 +1,12 @@
+// Copyright (c) 2025 The Gridfinity Block Contributors
+// Licensed under the Apache License, Version 2.0 (see LICENSE file)
+// https://github.com/wromijn/openscad-gridfinity-block
+
 /* [Hidden] */
 gf_wall_thickness = 1.3;
-gf_almost_zero = 0.001;
+gf_almost_zero = 0.01;
 
-module gb_cube_hole(pos, size, depth, radius=0.8) {
+module gb_square_hole(pos, size, depth, radius=0.8) {
      translate([ pos[0] + radius, pos[1] + radius, -depth ]) {
          linear_extrude(h = depth + gf_almost_zero) {
              offset(r = radius) {
@@ -12,7 +16,7 @@ module gb_cube_hole(pos, size, depth, radius=0.8) {
      }
  }
 
-module gb_cylinder_hole(pos, d, depth) {
+module gb_round_hole(pos, d, depth) {
     translate([ pos[0], pos[1], -depth ]) {
         cylinder(h=depth + gf_almost_zero, d=d);
     }
