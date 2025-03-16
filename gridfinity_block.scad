@@ -2,22 +2,27 @@
 // Licensed under the Apache License, Version 2.0 (see LICENSE file)
 // https://github.com/wromijn/openscad-gridfinity-block
 
+// Show test object
+gf_run_test = "None"; // [None, Features, Coordinates]
+
 /* [Hidden] */
 gf_wall_thickness = 1.3;
 gf_almost_zero = 0.01;
+$fn=128;
 
 module gb_square_hole(pos, size, depth, radius = 0.8, center = false) {
     difference() {
         translate([ pos[0], pos[1], -depth ]) {
             _gb_rounded_cube([ size[0], size[1], depth + gf_almost_zero ], radius = radius, center = center);
         }
-        offset_x = center ? -size[0] / 2 : 0;
-        offset_y = center ? -size[1] / 2 : 0;
+        offset_x = center ? pos[0] - size[0] / 2 : pos[0];
+        offset_y = center ? pos[1] - size[1] / 2 : pos[1];
         
         translate([ offset_x-gf_almost_zero, offset_y-gf_almost_zero, -depth]) {
             let(
-                $inner_width = $inner_width + 2 * gf_almost_zero,
-                $inner_length = $inner_length + 2 * gf_almost_zero
+                $inner_width = size[0] + 2 * gf_almost_zero,
+                $inner_length = size[1] + 2 * gf_almost_zero,
+                $inner_height = depth
             ) {
                 children();
             }
@@ -25,13 +30,19 @@ module gb_square_hole(pos, size, depth, radius = 0.8, center = false) {
     }
 }
 
-module gb_round_hole(pos, d, depth) {
+module gb_round_hole(pos, diameter, depth) {
     difference() {
         translate([ pos[0], pos[1], -depth ]) {
-            cylinder(h=depth + gf_almost_zero, d=d);
+            cylinder(h=depth + gf_almost_zero, d=diameter);
         }
         translate([ pos[0], pos[1], -depth ]) {
-            children();
+            let(
+                $inner_width = diameter,
+                $inner_length = diameter,
+                $inner_height = depth
+            ) {
+                children();
+            }
         }
     }
 }
@@ -88,7 +99,6 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             floor_thickness = 1;
 
             let(
-                $center = center,
                 $inner_width = size[0] - 2 * gf_wall_thickness,
                 $inner_length = size[1] - 2 * gf_wall_thickness,
                 $inner_height = size[2] - floor_thickness,
@@ -180,7 +190,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     }
 }
 
- module _gb_rounded_cube(size, radius, center = false) {
+module _gb_rounded_cube(size, radius, center = false) {
     linear_extrude(h = size[2]) {
         _gb_rounded_square(size, radius, center);
     }
@@ -192,6 +202,70 @@ module _gb_rounded_square(size, radius, center = false) {
     translate([ offset, offset, 0 ]) {
         offset(r = radius) {
             square(corrected_size, center = center);
+        }
+    }
+}
+
+// A test block that uses almost all features - if it looks different, something is wrong 
+if (gf_run_test == "Features") {        
+    gridfinity_block([ 3, 2, 6 ], center=false, stacking_lip=true) {
+        // square holes of different depth
+        gb_square_hole([0,0], [30, 20], 10);
+        gb_square_hole([31,0], [30, 20], 20);
+        
+        gb_square_hole([0,21], [61, $inner_length-21], $inner_height) {
+            // coordinates inside a square hole range from [0,0,0] to [$inner_width, $inner_length, $inner_height]
+            translate([$inner_width/2, $inner_length/2]) {
+                cylinder(h=10, d=20);
+                cylinder(h=$inner_height, d=10);
+            }
+            // scoop to check z-fighting mitigation
+            translate([0, $inner_length-20,0 ])
+            difference() {
+                cube([$inner_width, 20, 20]);
+                translate([0,0,20])
+                    rotate([0,90,0])
+                        cylinder(h=$inner_width, r=20);
+            }
+        }
+        
+        // centering a square hole doesn't affect the coordinates inside it
+        gb_square_hole([62 + ($inner_width-62) / 2, 16], [32, 32], 10, center=true) {
+            // $inner_height is adjusted for the shallow square hole: both cylinders should have the same height
+            translate([12, 12]) {
+                cylinder(h=7.5, d=14);
+            }
+            translate([$inner_width-12, $inner_length-12]) {
+                cylinder(h=$inner_height-2.5, d=14);
+            }
+        }
+
+        for(x = [0:2]) {
+            gb_round_hole([20*x+72, 70], 10+x*2.5, 10) {
+                // inside a round hole, the [0,0] point is the center
+                cylinder(h=10-x*5, d=5);
+            }
+        }
+        
+        for(x = [0:2]) {
+            gb_round_hole([20*x+72, 50], 10+x*2.5, 20) {
+                // $inner_height is adjusted for round holes as well
+                cylinder(h=$inner_height-x*10, d=5);
+            }
+        }
+    }
+}
+
+// Blocks to test the coordinate systems ([0,0] at bottom left or center of top surface). Both blocks should look the same
+if (gf_run_test == "Coordinates") {
+    gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = true) {
+        gb_square_hole([ -$inner_width/2, -$inner_length/2 ],[ $inner_width, $inner_length/2 ], $inner_height);
+        gb_round_hole([ 0, $inner_length/4 ], 38, $inner_height);
+    }
+    translate([70, gf_wall_thickness-41.5, 0]) {
+        gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = false) {
+            gb_square_hole([ 0, 0 ],[ $inner_width, $inner_length/2 ], $inner_height);
+            gb_round_hole([ 21 + $inner_width / 3, 21 + $inner_length / 2 ], 38, $inner_height);
         }
     }
 }
