@@ -8,7 +8,7 @@ A solid block with optional stacking lip to create custom Gridfinity bins by sta
 </p>
 
 ## Quickstart
-Useless block that demonstrates the library. It creates a block that's 1 unit wide, 2 units deep and 6U high, with the [0,0,0] point being the bottom-left of the top surface inside the bin walls. Then it adds a square hole with a cube inside it and 2 round holes.
+Useless block that demonstrates the library. It creates a block that's 1 unit wide, 2 units deep and 6U high, with the [0,0,0] point being the bottom-left of the top surface inside the bin walls. Then it adds a square hole with a cube inside, 2 round holes, and also subtracts a standard cube from the block.
 
 ```openscad
 use <openscad-gridfinity-block/gridfinity_block.scad>;
@@ -21,6 +21,7 @@ gridfinity_block([ 1, 2, 6 ], stacking_lip = true) {
     };
     gb_round_hole( [ 10, $inner_length / 2 ], 15, depth = $inner_height);
     gb_round_hole( [ 29, $inner_length / 2 ], 15, depth = 10);
+    translate( [ $inner_width / 2, $inner_length - 20, -5 ]) cube(12, center = true);
 };
 ```
 
