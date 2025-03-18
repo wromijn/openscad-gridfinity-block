@@ -8,20 +8,15 @@ A solid block with optional stacking lip to create custom Gridfinity bins by sta
 </p>
 
 ## Quickstart
-Useless block that demonstrates the library. It creates a block that's 1 unit wide, 2 units deep and 6U high, with the [0,0,0] point being the bottom-left of the top surface inside the bin walls. Then it adds a square hole with a cube inside, 2 round holes, and also subtracts a standard cube from the block.
+This creates a block that's 1 unit wide, 1 unit deep and 4U high, with the [0,0,0] point being the center of the top surface. The nested sphere is subtracted from the block.
 
 ```openscad
 use <openscad-gridfinity-block/gridfinity_block.scad>;
 
 $fn=128;
 
-gridfinity_block([ 1, 2, 6 ], stacking_lip = true) {
-    gb_square_hole( [ 0, 0 ], [ $inner_width, 20 ], depth = 20) {
-        cube( [ $inner_width, $inner_length / 2, $inner_height / 2 ]);
-    };
-    gb_round_hole( [ 10, $inner_length / 2 ], 15, depth = $inner_height);
-    gb_round_hole( [ 29, $inner_length / 2 ], 15, depth = 10);
-    translate( [ $inner_width / 2, $inner_length - 20, -5 ]) cube(12, center = true);
+gridfinity_block([ 1, 1, 4 ], stacking_lip = true, center=true) {
+    sphere(r=15);
 };
 ```
 
