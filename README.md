@@ -8,7 +8,7 @@ A solid block with optional stacking lip to create custom Gridfinity bins by sta
 </p>
 
 ## Quickstart
-This creates a block that's 1 unit wide, 1 unit deep and 4U high, with the [0,0,0] point being the center of the top surface. The nested sphere is subtracted from the block.
+This creates a block that's 1x1 units and 4U high, with the [0,0,0] point being the center of the top surface. The nested sphere is subtracted from the block.
 
 ```openscad
 use <openscad-gridfinity-block/gridfinity_block.scad>;
