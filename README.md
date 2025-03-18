@@ -25,4 +25,4 @@ Please see the [Project wiki](https://github.com/wromijn/openscad-gridfinity-blo
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-*Note: The Gridfinity system was originally conceptualized by Zack Freedman. See [https://gridfinity.xyz/](https://gridfinity.xyz/){:target="_blank"} for more information about Gridfinity.*
+*Note: The Gridfinity system was originally conceptualized by Zack Freedman. See <a href="[http://example.com/](https://gridfinity.xyz/)" target="_blank">[example](https://gridfinity.xyz/)</a> for more information about Gridfinity.*
