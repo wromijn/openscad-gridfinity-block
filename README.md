@@ -1,7 +1,7 @@
 # Gridfinity Block
 
 ## What is it?
-A parametric OpenSCAD model for creating custom storage bins for the Gridfinity system. This library defines a solid block that can be customized using built-in subtraction functions to carve out specific shapes, holes, or compartments. And there are magnet holes too!
+An OpenSCAD model for creating custom storage bins for the Gridfinity system. This library defines a solid block that can be customized using built-in subtraction functions to carve out specific shapes, holes, or compartments. And there are magnet holes too!
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/aae9cd4e-d49b-428c-865d-8bc6d732be17" alt="gridfinity-block visual" height="200">
