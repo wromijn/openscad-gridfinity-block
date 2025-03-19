@@ -208,49 +208,49 @@ module _gb_rounded_square(size, radius, center = false) {
 
 // A test block that uses almost all features - if it looks different, something is wrong 
 if (gf_run_test == "Features") {        
-    gridfinity_block([ 3, 2, 6 ], center=false, stacking_lip=true) {
+    gridfinity_block([ 3, 2, 6 ], center = false, stacking_lip = true) {
         // square holes of different depth
-        gb_square_hole([0,0], [30, 20], 10);
-        gb_square_hole([31,0], [30, 20], 20);
+        gb_square_hole([ 0, 0 ], [ 30, 20 ], 10);
+        gb_square_hole([ 31, 0 ], [ 30, 20 ], 20);
         
-        gb_square_hole([0,21], [61, $inner_length-21], $inner_height) {
+        gb_square_hole([ 0, 21 ], [ 61, $inner_length-21 ], $inner_height) {
             // coordinates inside a square hole range from [0,0,0] to [$inner_width, $inner_length, $inner_height]
-            translate([$inner_width/2, $inner_length/2]) {
-                cylinder(h=10, d=20);
-                cylinder(h=$inner_height, d=10);
+            translate([ $inner_width / 2, $inner_length / 2 ]) {
+                cylinder(h = 10, d = 20);
+                cylinder(h = $inner_height, d = 10);
             }
             // scoop to check z-fighting mitigation
-            translate([0, $inner_length-20,0 ])
+            translate([ 0, $inner_length - 20, 0 ])
             difference() {
-                cube([$inner_width, 20, 20]);
-                translate([0,0,20])
-                    rotate([0,90,0])
-                        cylinder(h=$inner_width, r=20);
+                cube([ $inner_width, 20, 20 ]);
+                translate([ 0, 0, 20 ])
+                    rotate([ 0, 90, 0 ])
+                        cylinder(h = $inner_width, r = 20);
             }
         }
         
         // centering a square hole doesn't affect the coordinates inside it
-        gb_square_hole([62 + ($inner_width-62) / 2, 16], [32, 32], 10, center=true) {
+        gb_square_hole([ 62 + ($inner_width - 62) / 2, 16 ], [ 32, 32 ], 10, center = true) {
             // $inner_height is adjusted for the shallow square hole: both cylinders should have the same height
-            translate([12, 12]) {
-                cylinder(h=7.5, d=14);
+            translate([ 12, 12 ]) {
+                cylinder(h = 7.5, d = 14);
             }
-            translate([$inner_width-12, $inner_length-12]) {
-                cylinder(h=$inner_height-2.5, d=14);
+            translate([ $inner_width - 12, $inner_length - 12 ]) {
+                cylinder( h = $inner_height - 2.5, d = 14);
             }
         }
 
         for(x = [0:2]) {
-            gb_round_hole([20*x+72, 70], 10+x*2.5, 10) {
+            gb_round_hole([ 20 * x + 72, 70 ], 10 + x * 2.5, 10) {
                 // inside a round hole, the [0,0] point is the center
-                cylinder(h=10-x*5, d=5);
+                cylinder(h = 10 - x * 5, d = 5);
             }
         }
         
         for(x = [0:2]) {
-            gb_round_hole([20*x+72, 50], 10+x*2.5, 20) {
-                // $inner_height is adjusted for round holes as well
-                cylinder(h=$inner_height-x*10, d=5);
+            gb_round_hole([ 20 * x + 72, 50], 10 + x * 2.5, 20) {
+                // $inner_height is adjusted in round holes as well
+                cylinder(h = $inner_height - x * 10, d = 5);
             }
         }
     }
