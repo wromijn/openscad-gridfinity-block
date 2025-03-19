@@ -13,6 +13,7 @@ Pull requests for these things are happily received:
 - Changes that improve compatibility with different Gridfinity setups, like additional feet types or configurable magnet holes.
 - Bug fixes
 - Code changes that improve readability or maintainability
+- Additional examples
 
 ## Changes that will be refused
 
