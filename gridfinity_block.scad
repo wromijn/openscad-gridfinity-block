@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0 (see LICENSE file)
 // https://github.com/wromijn/openscad-gridfinity-block
 
+assert(version_num() >= 20211200, "This library requires OpenSCAD 2021.12 or newer - sorry :(");
+
 // Show test object
 gf_run_test = "None"; // [None, Features, Coordinates]
 
@@ -101,7 +103,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             let(
                 $inner_width = size[0] - 2 * gf_wall_thickness,
                 $inner_length = size[1] - 2 * gf_wall_thickness,
-                $inner_height = size[2] - floor_thickness,
+                $inner_height = size[2] - floor_thickness
             ) {
                 children_x_offset = center ? 0 : -$inner_width / 2;
                 children_y_offset = center ? 0 : -$inner_length / 2;
@@ -242,7 +244,7 @@ if (gf_run_test == "Features") {
 
         for(x = [0:2]) {
             gb_round_hole([ 20 * x + 72, 70 ], 10 + x * 2.5, 10) {
-                // inside a round hole, the [0,0] point is the center
+                // inside a round hole, the [0,0,0] point is the center of the floor
                 cylinder(h = 10 - x * 5, d = 5);
             }
         }
