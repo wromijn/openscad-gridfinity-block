@@ -1,7 +1,7 @@
 # Gridfinity Block
 
 ## What is it?
-An OpenSCAD model for creating custom storage bins for the Gridfinity system. This library defines a solid block that can be customized using built-in subtraction functions to carve out specific shapes, holes, or compartments. And there are magnet holes too!
+An OpenSCAD model to create custom storage bins for the Gridfinity system. This library defines a solid block that can be customized using built-in subtraction functions to carve out specific shapes, holes, or compartments. And there are magnet holes too! The model requires using a Development Snapshot (2021.12 or newer) of OpenSCAD. The stable 2021.01 will not work. 
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/aae9cd4e-d49b-428c-865d-8bc6d732be17" alt="gridfinity-block visual" height="200">
@@ -11,7 +11,7 @@ An OpenSCAD model for creating custom storage bins for the Gridfinity system. Th
 This creates a block that's 1x1 units and 4U high, with the [0,0,0] point being the center of the top surface. The nested sphere is subtracted from the block.
 
 ```openscad
-use <openscad-gridfinity-block/gridfinity_block.scad>;
+use <openscad-gridfinity-block/gridfinity_block.scad>
 
 $fn=128;
 
