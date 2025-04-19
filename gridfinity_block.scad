@@ -2,15 +2,12 @@
 // Licensed under the Apache License, Version 2.0 (see LICENSE file)
 // https://github.com/wromijn/openscad-gridfinity-block
 
-assert(version_num() >= 20211200, "This library requires OpenSCAD 2021.12 or newer - sorry :(");
-
 // Show test object
 gf_run_test = "None"; // [None, Features, Coordinates]
 
 /* [Hidden] */
 gf_wall_thickness = 1.3;
 gf_almost_zero = 0.01;
-$fn=128;
 
 module gb_square_hole(pos, size, depth, radius = 0.8, center = false) {
     difference() {
@@ -21,13 +18,10 @@ module gb_square_hole(pos, size, depth, radius = 0.8, center = false) {
         offset_y = center ? pos[1] - size[1] / 2 : pos[1];
         
         translate([ offset_x-gf_almost_zero, offset_y-gf_almost_zero, -depth]) {
-            let(
-                $inner_width = size[0] + 2 * gf_almost_zero,
-                $inner_length = size[1] + 2 * gf_almost_zero,
-                $inner_height = depth
-            ) {
-                children();
-            }
+            $inner_width = size[0] + 2 * gf_almost_zero;
+            $inner_length = size[1] + 2 * gf_almost_zero;
+            $inner_height = depth;
+            children();
         }
     }
 }
@@ -38,13 +32,10 @@ module gb_round_hole(pos, diameter, depth) {
             cylinder(h=depth + gf_almost_zero, d=diameter);
         }
         translate([ pos[0], pos[1], -depth ]) {
-            let(
-                $inner_width = diameter,
-                $inner_length = diameter,
-                $inner_height = depth
-            ) {
-                children();
-            }
+            $inner_width = diameter;
+            $inner_length = diameter;
+            $inner_height = depth;
+            children();
         }
     }
 }
@@ -59,6 +50,15 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
         7 * size[2]
     ];
 
+    // [ [width, length, height, radius], ... ]
+    foot_layers = [
+        [35.6, 35.6, 0, 0.8], [37.2, 37.2, 0.8, 1.6],
+        [37.2, 37.2, 0.8, 1.6], [37.2, 37.2, 2.6, 1.6],
+        [37.2, 37.2, 2.6, 1.6], [41.5, 41.5, 4.75, 3.75]
+    ];
+    
+    feet_height = foot_layers[len(foot_layers)-1][2];
+
     feet_position = [
         center ? 0 : bin_dimensions[0] / 2 - gf_wall_thickness,
         center ? 0 : bin_dimensions[1] / 2 - gf_wall_thickness,
@@ -66,17 +66,17 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     ];
 
     translate(feet_position) {
-        feet(size[0], size[1]) {
+        feet(size[0], size[1], foot_layers) {
             block_dimensions = [
                 bin_dimensions[0],
                 bin_dimensions[1],
-                bin_dimensions[2] - $feet_height
+                bin_dimensions[2] - feet_height
             ];
 
             block_position = [
                 0,
                 0,
-                $feet_height
+                feet_height
             ];
 
             translate(block_position) {
@@ -100,28 +100,19 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
 
             floor_thickness = 1;
 
-            let(
-                $inner_width = size[0] - 2 * gf_wall_thickness,
-                $inner_length = size[1] - 2 * gf_wall_thickness,
-                $inner_height = size[2] - floor_thickness
-            ) {
-                children_x_offset = center ? 0 : -$inner_width / 2;
-                children_y_offset = center ? 0 : -$inner_length / 2;
-                translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
-                    children();
-                }
+            $inner_width = size[0] - 2 * gf_wall_thickness;
+            $inner_length = size[1] - 2 * gf_wall_thickness;
+            $inner_height = size[2] - floor_thickness;
+
+            children_x_offset = center ? 0 : -$inner_width / 2;
+            children_y_offset = center ? 0 : -$inner_length / 2;
+            translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
+                children();
             }
         }
     }
 
-    module feet(number_x, number_y) {
-        // [ [width, length, height, radius], ... ]
-        foot_layers = [
-            [35.6, 35.6, 0, 0.8], [37.2, 37.2, 0.8, 1.6],
-            [37.2, 37.2, 0.8, 1.6], [37.2, 37.2, 2.6, 1.6],
-            [37.2, 37.2, 2.6, 1.6], [41.5, 41.5, 4.75, 3.75]
-        ];
-
+    module feet(number_x, number_y, foot_layers) {
         for(grid_x = [0:number_x-1]) {
             for(grid_y = [0:number_y-1]) {
                 foot_xpos = 42 * grid_x - 21 * number_x + 21;
@@ -132,9 +123,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
             }
         }
 
-        let($feet_height = foot_layers[len(foot_layers)-1][2]) {
-            children();
-        }
+        children();
 
         module foot(layers) {
             difference() {
@@ -193,7 +182,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
 }
 
 module _gb_rounded_cube(size, radius, center = false) {
-    linear_extrude(h = size[2]) {
+    linear_extrude(size[2]) {
         _gb_rounded_square(size, radius, center);
     }
 }
