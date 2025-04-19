@@ -1,4 +1,4 @@
-use <../gridfinity_block.scad>;
+use <../gridfinity_block.scad>
 
 $fn = 128;
 
