@@ -15,7 +15,7 @@ use <openscad-gridfinity-block/gridfinity_block.scad>
 
 $fn=128;
 
-gridfinity_block([ 1, 1, 4 ], stacking_lip = true, center=true) {
+gridfinity_block([ 1, 1, 4 ], stacking_lip = true, center=true, magnets=true) {
     sphere(r=15);
 };
 ```
