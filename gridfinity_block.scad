@@ -40,7 +40,7 @@ module gb_round_hole(pos, diameter, depth) {
     }
 }
 
-module gridfinity_block(size, stacking_lip = false, center = false) {
+module gridfinity_block(size, stacking_lip = false, center = false, magnets=true) {
 
     tolerance = 0.5;
 
@@ -66,7 +66,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
     ];
 
     translate(feet_position) {
-        feet(size[0], size[1], foot_layers) {
+        feet(size[0], size[1], foot_layers, magnets) {
             block_dimensions = [
                 bin_dimensions[0],
                 bin_dimensions[1],
@@ -112,7 +112,7 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
         }
     }
 
-    module feet(number_x, number_y, foot_layers) {
+    module feet(number_x, number_y, foot_layers, magnets) {
         for(grid_x = [0:number_x-1]) {
             for(grid_y = [0:number_y-1]) {
                 foot_xpos = 42 * grid_x - 21 * number_x + 21;
@@ -128,7 +128,8 @@ module gridfinity_block(size, stacking_lip = false, center = false) {
         module foot(layers) {
             difference() {
                 rounded_hull(layers);
-                magnet_holes();
+                if (magnets)
+                    magnet_holes();
             }
         }
 
