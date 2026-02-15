@@ -156,7 +156,7 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
         ];
 
         difference() {       
-            _gb_rounded_cube([ size[0], size[1], 4.6 ], 3.75, center);
+            _gb_rounded_cube([ size[0], size[1], 4.85 ], 3.75, center);
             rounded_hull(lip_layers);
         }
     }
