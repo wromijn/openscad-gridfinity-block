@@ -98,7 +98,7 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
             union() {
                 _gb_rounded_cube(size, 3.75, true);
                 if (stacking_lip) {
-                   translate([ 0, 0, size[2] ]) {
+                   translate([ 0, 0, size[2] - 1.2 ]) {
                        stacking_lip([ size[0], size[1] ], true);
                    }
                 }
