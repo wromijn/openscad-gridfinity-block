@@ -103,7 +103,7 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
             $inner_width = size[0] - 2 * gf_wall_thickness;
             $inner_length = size[1] - 2 * gf_wall_thickness;
             $inner_height = size[2] - floor_thickness;
-
+            
             children_x_offset = center ? 0 : -$inner_width / 2;
             children_y_offset = center ? 0 : -$inner_length / 2;
             translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
@@ -148,9 +148,10 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
     module stacking_lip(size, center) {
         // [ [width, length, height, radius], ... ]
         lip_layers = [
-            [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0] - 1, size[1] - 1, 3.4, 3.1 ]
+            [ size[0] + gf_wall_thickness/2, size[1] + gf_wall_thickness / 2, 0.7 - 2 * gf_wall_thickness, 0.8 ], [ size[0] - 3.8, size[1] - 3.8, 0.7, 1.6 ],
+            [ size[0] - 5.2, size[1] - 5.2, -gf_almost_zero, 0.8 ], [ size[0] - 3.8, size[1] - 3.8, 0.7, 1.6 ],
+            [ size[0] - 3.8, size[1] - 3.8, 0.7, 1.6 ], [ size[0] - 3.8, size[1] - 3.8, 2.5, 1.6 ],
+            [ size[0] - 3.8, size[1] - 3.8, 2.5, 1.6 ], [ size[0] - 2, size[1] - 2, 3.4, 2.8 ]
         ];
 
         difference() {
