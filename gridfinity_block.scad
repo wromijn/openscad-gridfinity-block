@@ -150,11 +150,11 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
         lip_layers = [
             [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
             [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0], size[1], 4.4, 3.75 ]
+            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0] - 1, size[1] - 1, 3.4, 3.1 ]
         ];
 
         difference() {
-            _gb_rounded_cube([ size[0], size[1], 4.4 ], 3.75, center);
+            _gb_rounded_cube([ size[0], size[1], 3.4 ], 3.75, center);
             rounded_hull(lip_layers);
         }
     }
@@ -199,7 +199,9 @@ module _gb_rounded_square(size, radius, center = false) {
 }
 
 // A test block that uses almost all features - if it looks different, something is wrong 
-if (gf_run_test == "Features") {        
+if (gf_run_test == "Features") {   
+    $fn=128;
+     
     gridfinity_block([ 3, 2, 6 ], center = false, stacking_lip = true) {
         // square holes of different depth
         gb_square_hole([ 0, 0 ], [ 30, 20 ], 10);
@@ -250,6 +252,7 @@ if (gf_run_test == "Features") {
 
 // Blocks to test the coordinate systems ([0,0] at bottom left or center of top surface). Both blocks should look the same
 if (gf_run_test == "Coordinates") {
+    $fn=128;
     gridfinity_block([ 3, 2, 6 ], stacking_lip = true, center = true) {
         gb_square_hole([ -$inner_width/2, -$inner_length/2 ],[ $inner_width, $inner_length/2 ], $inner_height);
         gb_round_hole([ 0, $inner_length/4 ], 38, $inner_height);
