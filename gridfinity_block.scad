@@ -152,7 +152,7 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
             [ size[0] - 5.2, size[1] - 5.2, 0.7, 0.8 ], [ size[0] - 5.2, size[1] - 5.2, 1.2, 0.8 ],
             [ size[0] - 5.2, size[1] - 5.2, 1.2, 0.8 ], [ size[0] - 3.8, size[1] - 3.8, 1.9, 1.6 ],
             [ size[0] - 3.8, size[1] - 3.8, 1.9, 1.6 ], [ size[0] - 3.8, size[1] - 3.8, 3.7, 1.6 ],
-            [ size[0] - 3.8, size[1] - 3.8, 3.7, 1.6 ], [ size[0] - 2, size[1] - 2, 4.6, 2.8 ]
+            [ size[0] - 3.8, size[1] - 3.8, 3.7, 1.6 ], [ size[0] - 1.5, size[1] - 1.5, 4.85, 2.8 ]
         ];
 
         difference() {       
