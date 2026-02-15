@@ -148,9 +148,12 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
     module stacking_lip(size, center) {
         // [ [width, length, height, radius], ... ]
         lip_layers = [
-            [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0], size[1], 4.4, 3.75 ]
+            [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ],
+            [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
+            [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
+            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
+            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
+            [ size[0] - 1, size[1] - 1, 4.4, 3.1 ]
         ];
 
         difference() {
@@ -199,7 +202,9 @@ module _gb_rounded_square(size, radius, center = false) {
 }
 
 // A test block that uses almost all features - if it looks different, something is wrong 
-if (gf_run_test == "Features") {        
+if (gf_run_test == "Features") {   
+    $fn=128;
+     
     gridfinity_block([ 3, 2, 6 ], center = false, stacking_lip = true) {
         // square holes of different depth
         gb_square_hole([ 0, 0 ], [ 30, 20 ], 10);
