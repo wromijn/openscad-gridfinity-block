@@ -88,6 +88,12 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
     }
 
     module block(size, center) {
+        floor_thickness = 1;
+
+        $inner_width = size[0] - 2 * gf_wall_thickness;
+        $inner_length = size[1] - 2 * gf_wall_thickness;
+        $inner_height = size[2] - floor_thickness;
+            
         difference() {
             union() {
                 _gb_rounded_cube(size, 3.75, true);
@@ -97,13 +103,7 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
                    }
                 }
             }
-
-            floor_thickness = 1;
-
-            $inner_width = size[0] - 2 * gf_wall_thickness;
-            $inner_length = size[1] - 2 * gf_wall_thickness;
-            $inner_height = size[2] - floor_thickness;
-
+            
             children_x_offset = center ? 0 : -$inner_width / 2;
             children_y_offset = center ? 0 : -$inner_length / 2;
             translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
@@ -148,13 +148,15 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
     module stacking_lip(size, center) {
         // [ [width, length, height, radius], ... ]
         lip_layers = [
-            [ size[0] - 2.6, size[1] - 2.6, -gf_almost_zero, 0.8 ], [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 0.7, 1.6 ], [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ],
-            [ size[0] - 1.9, size[1] - 1.9, 2.5, 1.6 ], [ size[0] - 1, size[1] - 1, 3.4, 3.1 ]
+            [ $inner_width, $inner_length, -gf_almost_zero, 0.8 ], [ size[0] - 5.2, size[1] - 5.2, 0.7, 0.8 ],
+            [ size[0] - 5.2, size[1] - 5.2, 0.7, 0.8 ], [ size[0] - 5.2, size[1] - 5.2, 1.2, 0.8 ],
+            [ size[0] - 5.2, size[1] - 5.2, 1.2, 0.8 ], [ size[0] - 3.8, size[1] - 3.8, 1.9, 1.6 ],
+            [ size[0] - 3.8, size[1] - 3.8, 1.9, 1.6 ], [ size[0] - 3.8, size[1] - 3.8, 3.7, 1.6 ],
+            [ size[0] - 3.8, size[1] - 3.8, 3.7, 1.6 ], [ size[0] - 1.5, size[1] - 1.5, 4.85, 2.8 ]
         ];
 
-        difference() {
-            _gb_rounded_cube([ size[0], size[1], 3.4 ], 3.75, center);
+        difference() {       
+            _gb_rounded_cube([ size[0], size[1], 4.6 ], 3.75, center);
             rounded_hull(lip_layers);
         }
     }
