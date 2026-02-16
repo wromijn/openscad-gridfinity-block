@@ -93,21 +93,21 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
         $inner_width = size[0] - 2 * gf_wall_thickness;
         $inner_length = size[1] - 2 * gf_wall_thickness;
         $inner_height = size[2] - floor_thickness;
-            
-        difference() {
-            union() {
+
+        union() {
+            difference() {
                 _gb_rounded_cube(size, 3.75, true);
-                if (stacking_lip) {
-                   translate([ 0, 0, size[2] - 1.2 ]) {
-                       stacking_lip([ size[0], size[1] ], true);
-                   }
+                children_x_offset = center ? 0 : -$inner_width / 2;
+                children_y_offset = center ? 0 : -$inner_length / 2;
+                translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
+                    children();
                 }
             }
-            
-            children_x_offset = center ? 0 : -$inner_width / 2;
-            children_y_offset = center ? 0 : -$inner_length / 2;
-            translate([ children_x_offset, children_y_offset, $inner_height + floor_thickness ]) {
-                children();
+
+            if (stacking_lip) {
+                translate([ 0, 0, size[2] - 1.2 ]) {
+                    stacking_lip([ size[0], size[1] ], true);
+                }
             }
         }
     }
@@ -128,8 +128,9 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
         module foot(layers) {
             difference() {
                 rounded_hull(layers);
-                if (magnets)
+                if (magnets) {
                     magnet_holes();
+                }
             }
         }
 
@@ -140,7 +141,7 @@ module gridfinity_block(size, stacking_lip = false, center = false, magnets=true
             translate([ -13, -13, 1 ]) { magnet_hole(); }
 
             module magnet_hole() {
-                cylinder(d = 6, h = 2 + gf_almost_zero, center = true);
+                cylinder(d = 6.1, h = 2.1 + gf_almost_zero, center = true);
             }
         }
     }
